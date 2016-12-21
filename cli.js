@@ -1,7 +1,12 @@
+#!/usr/bin/env node
 const Health = require('./')
 const pretty = require('pretty-bytes')
 
-var key = process.argv.slice(2)[0] || '587db7de5a030b9b91ddcb1882cf0e4b67b4609568997eee0d4dfe74ce31d198'
+var key = process.argv.slice(2)[0] 
+if (!key) {
+  console.error('dat-health <link>')
+  process.exit(1)
+}
 console.log('Watching', key)
 var health = Health(key)
 health.on('change', function (data) {

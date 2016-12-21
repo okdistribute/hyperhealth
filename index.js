@@ -5,7 +5,7 @@ const discovery = require('hyperdiscovery')
 
 module.exports = function (archiveOrKey, opts) {
   if (!opts) opts = {}
-  var archive = archiveOrKey.metadata ? archiveOrKey : createArchive(archiveOrKey)
+  var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
   var swarm = discovery(archive)
   var emitter = new EventEmitter()
   archive.open(function () {
