@@ -1,6 +1,6 @@
 {
   "name": "hyperhealth",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Monitor the health of a hyperdrive feed, including peer mirror percentages.",
   "main": "index.js",
   "scripts": {
@@ -26,11 +26,18 @@
     "pretty-bytes": "^4.0.2"
   },
   "keywords": [
-    "dat", "hyperdrive", "health", "peers", "download", "downloaded",
+    "dat",
+    "hyperdrive",
+    "health",
+    "peers",
+    "download",
+    "downloaded",
     "swarm",
     "data package",
     "dataset",
     "replication",
-    "synchronization", "monitoring", "dashboard"
+    "synchronization",
+    "monitoring",
+    "dashboard"
   ]
 }
