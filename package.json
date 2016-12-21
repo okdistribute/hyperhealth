@@ -7,7 +7,15 @@
     "test": "node test.js"
   },
   "bin": {
-    "dat-health": "cli.js"
+    "hyperhealth": "cli.js"
+  },
+  "bugs": {
+    "url": "https://github.com/karissa/hyperhealth/issues"
+  },
+  "homepage": "https://github.com/karissa/hyperhealth",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/karissa/hyperhealth.git"
   },
   "author": "Karissa McKelvey <karissa@datproject.org>",
   "license": "BSD-2-Clause",
