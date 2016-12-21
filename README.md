@@ -1,6 +1,6 @@
 # hyperhealth
 
-Monitor the health of a hyperdrive or dat, including peer count and peer mirror percentages.
+Monitor the health of a hyperdrive or dat, including peer count and peer mirror percentages. Does not actually download any data content, only downloads some of the metadata and monitors the peer feeds.
 
 ```
 npm install dat-health
