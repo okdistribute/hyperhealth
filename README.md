@@ -11,8 +11,9 @@ npm install dat-health
 ```js
 var Health = require('hyperhealth')
 
+var health = Health('ARCHIVE_KEY')
+
 // Will fire every 1 second
-var health = Health('ARCHIVE_KEY', 1000)
 setInterval(function () {
   var data = health()
   console.log(data.peers.length, 'total peers')
