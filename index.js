@@ -3,22 +3,14 @@ const EventEmitter = require('events').EventEmitter
 const hyperdrive = require('hyperdrive')
 const discovery = require('hyperdiscovery')
 
-module.exports = function (archiveOrKey, opts) {
-  if (!opts) opts = {}
+module.exports = function (archiveOrKey) {
   var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
   var swarm = discovery(archive)
-  var emitter = new EventEmitter()
   archive.open(function () {
     archive.content.get(0, function () {
       // hack to get data
     })
   })
-
-  function change (data) {
-    emitter.emit('change', data)
-  }
-
-  setInterval(begin, opts.interval || 1000)
 
   function begin () {
     var feed = archive.content
@@ -40,15 +32,15 @@ module.exports = function (archiveOrKey, opts) {
       peers.push({id: peer.stream.remoteId, have: have, blocks: feed.blocks})
     }
 
-    change({
+    return {
       connected: swarm.connected,
       bytes: archive.content.bytes,
       blocks: archive.content.blocks,
       peers: peers
-    })
+    }
   }
 
-  return emitter
+  return begin
 }
 
 

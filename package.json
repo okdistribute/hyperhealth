@@ -1,7 +1,7 @@
 {
-  "name": "dat-health",
+  "name": "hyperhealth",
   "version": "1.0.0",
-  "description": "Monitor the health of a dat, including peer backup percentages.",
+  "description": "Monitor the health of a hyperdrive feed, including peer mirror percentages.",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
