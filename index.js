@@ -28,7 +28,7 @@ module.exports = function (archiveOrKey, opts) {
       }
 
       if (!have) continue
-      peers.push({id: peer.stream.remoteId, have: have, blocks: feed.blocks})
+      peers.push({id: peer.stream.remoteId.toString('hex'), have: have, blocks: feed.blocks})
     }
 
     return {
