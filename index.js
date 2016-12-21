@@ -2,9 +2,9 @@ const memdb = require('memdb')
 const hyperdrive = require('hyperdrive')
 const discovery = require('hyperdiscovery')
 
-module.exports = function (archiveOrKey) {
+module.exports = function (archiveOrKey, opts) {
   var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
-  var swarm = discovery(archive)
+  var swarm = discovery(archive, opts)
   archive.open(function () {
     archive.content.get(0, function () {
       // hack to get data

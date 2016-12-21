@@ -25,10 +25,12 @@ setInterval(function () {
 
 ## API
 
-```health = Health(key-or-archive)```
+### `health = Health(key-or-archive, [opts])`
 
 Takes a `hyperdrive` key or the corresponding hyperdrive archive instance.
-Returns an object `health` that has:
+Returns an object `health`.
+
+* `opts` are passed to the `hyperdiscovery` instance
 
 ### `health.swarm`
 
