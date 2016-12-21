@@ -1,5 +1,4 @@
 const memdb = require('memdb')
-const EventEmitter = require('events').EventEmitter
 const hyperdrive = require('hyperdrive')
 const discovery = require('hyperdiscovery')
 
@@ -12,7 +11,7 @@ module.exports = function (archiveOrKey) {
     })
   })
 
-  function begin () {
+  function get () {
     var feed = archive.content
     if (!archive.content) return
     var blocks = feed.blocks
@@ -36,11 +35,15 @@ module.exports = function (archiveOrKey) {
       connected: swarm.connected,
       bytes: archive.content.bytes,
       blocks: archive.content.blocks,
-      peers: peers
+      peers: peers,
     }
   }
 
-  return begin
+  return {
+    get: get,
+    swarm: swarm,
+    archive: archive
+  }
 }
 
 

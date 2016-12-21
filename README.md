@@ -15,7 +15,7 @@ var health = Health('ARCHIVE_KEY')
 
 // Will fire every 1 second
 setInterval(function () {
-  var data = health()
+  var data = health.get()
   console.log(data.peers.length, 'total peers')
   console.log(data.bytes, 'total bytes')
   console.log(data.blocks, 'total blocks')
@@ -27,8 +27,21 @@ setInterval(function () {
 
 ```health = Health(key-or-archive)```
 
-Takes a `hyperdrive` key or the corresponding hyperdrive archive instance. Returns a
-function `health` that when called will return an object representing
+Takes a `hyperdrive` key or the corresponding hyperdrive archive instance.
+Returns an object `health` that has:
+
+### `health.swarm`
+
+The swarm instance.
+
+### `health.archive`
+
+The archive instance. 
+
+### `health.get()`
+
+When called will return an object representing the health at a particular
+state.
 
 Returns:
 

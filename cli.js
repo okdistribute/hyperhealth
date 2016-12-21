@@ -10,7 +10,7 @@ if (!key) {
 console.log('Watching', key)
 var health = Health(key)
 setInterval(function () {
-  var data = health()
+  var data = health.get()
   console.log('Size: ' + pretty(data.bytes))
   for (var i = 0; i < data.peers.length; i++) {
     var peer = data.peers[i]
