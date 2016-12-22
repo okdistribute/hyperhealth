@@ -39,7 +39,7 @@ function getHealth () {
   for (var i = 0; i < data.peers.length; i++) {
     var peer = data.peers[i]
     var bar = bars[peer.id] ? bars[peer.id] : addPeerBar(peer.id, data.blocks)
-    var msg = 'Peer ' + (i+1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.blocks + ')'
+    var msg = 'Peer ' + (i + 1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.blocks + ')'
     peerOutput[i] = msg
     connectedPeerIds.push(peer.id)
   }
