@@ -1,6 +1,6 @@
 {
   "name": "hyperhealth",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Monitor the health of a hyperdrive feed, including peer mirror percentages.",
   "main": "index.js",
   "scripts": {
