@@ -6,9 +6,11 @@ module.exports = function (archiveOrKey, opts) {
   var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
   var swarm = discovery(archive, opts)
   archive.open(function () {
-    archive.content.get(0, function () {
-      // hack to get data
-    })
+    if (archive.content) {
+      archive.content.get(0, function () {
+        // hack to get data
+      })
+    }
   })
 
   function get () {
