@@ -3,8 +3,9 @@ const hyperdrive = require('hyperdrive')
 const discovery = require('hyperdiscovery')
 
 module.exports = function (archiveOrKey, opts) {
+  if (!opts) opts = {}
   var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
-  var swarm = discovery(archive, opts)
+  var swarm = opts.swarm || discovery(archive, opts)
   archive.open(function () {
     if (archive.content) {
       archive.content.get(0, function () {
