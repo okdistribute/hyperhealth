@@ -32,6 +32,8 @@ Returns an object `health`.
 
 * `opts` are passed to the `hyperdiscovery` instance
 
+`opts.swarm` can be passed in if you have your own swarm instance.
+
 ### `health.swarm`
 
 The swarm instance.
