@@ -1,6 +1,8 @@
 # hyperhealth
 
-Monitor the health of a hyperdrive or dat, including peer count and peer mirror percentages. Does not actually download any data content, only downloads some of the metadata and monitors the peer feeds.
+Monitor the health of a hyperfeed (hypercore or hyperdrive), including peer count and peer mirror percentages. 
+
+Does not actually download any data content, only downloads some of the metadata and monitors the peer feeds.
 
 ```
 npm install hyperhealth
@@ -11,7 +13,7 @@ npm install hyperhealth
 ```js
 var Health = require('hyperhealth')
 
-var health = Health('ARCHIVE_KEY')
+var health = Health(hypercore_feed)
 
 // Will fire every 1 second
 setInterval(function () {
@@ -27,20 +29,7 @@ setInterval(function () {
 
 ### `health = Health(key-or-archive, [opts])`
 
-Takes a `hyperdrive` key or the corresponding hyperdrive archive instance.
-Returns an object `health`.
-
-* `opts` are passed to the `hyperdiscovery` instance
-
-`opts.swarm` can be passed in if you have your own swarm instance.
-
-### `health.swarm`
-
-The swarm instance.
-
-### `health.archive`
-
-The archive instance. 
+Takes a `hyperdrive` or `hypercore` instance. Returns an object `health`.
 
 ### `health.get()`
 
