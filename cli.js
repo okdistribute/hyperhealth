@@ -3,6 +3,9 @@ var Health = require('./')
 var pretty = require('pretty-bytes')
 var logger = require('status-logger')
 var progress = require('progress-string')
+var hyperdrive = require('hyperdrive')
+var memdb = require('memdb')
+var hyperdiscovery = require('hyperdiscovery')
 var pick = require('lodash.pick')
 
 var key = process.argv.slice(2)[0]
@@ -11,7 +14,11 @@ if (!key) {
   process.exit(1)
 }
 
-var health = Health(key)
+var drive = hyperdrive(memdb())
+var archive = drive.createArchive(key, {sparse: true, live: true})
+var swarm = hyperdiscovery(archive)
+
+var health = Health(archive)
 
 var output = ['Watching ' + key, 'Connecting...']
 var peerOutput = []
@@ -21,7 +28,7 @@ var bars = {}
 setInterval(function () {
   getHealth()
   log.print()
-}, 100)
+}, 100  )
 getHealth()
 
 function getHealth () {

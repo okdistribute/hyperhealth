@@ -1,22 +1,16 @@
-const memdb = require('memdb')
-const hyperdrive = require('hyperdrive')
-const discovery = require('hyperdiscovery')
-
-module.exports = function (archiveOrKey, opts) {
-  if (!opts) opts = {}
-  var archive = archiveOrKey.key ? archiveOrKey : createArchive(archiveOrKey)
-  var swarm = opts.swarm || discovery(archive, opts)
-  archive.open(function () {
-    if (archive.content) {
-      archive.content.get(0, function () {
+module.exports = function (feed) {
+  // works with hyperdrive archives or hypercore feeds
+  feed.open(function () {
+    if (feed.content) {
+      feed.content.get(0, function (data) {
         // hack to get data
       })
     }
   })
 
   function get () {
-    var feed = archive.content
-    if (!archive.content) return
+    if (feed.content) feed = feed.content
+    if (!feed.peers) return
     var blocks = feed.blocks
     var peers = []
 
@@ -35,23 +29,13 @@ module.exports = function (archiveOrKey, opts) {
     }
 
     return {
-      connected: swarm.connected,
-      bytes: archive.content.bytes,
-      blocks: archive.content.blocks,
+      bytes: feed.bytes,
+      blocks: feed.blocks,
       peers: peers,
     }
   }
 
   return {
-    get: get,
-    swarm: swarm,
-    archive: archive
+    get: get
   }
-}
-
-
-function createArchive (key) {
-  var drive = hyperdrive(memdb())
-  var archive = drive.createArchive(key, { sparse: true, live: true })
-  return archive
 }
