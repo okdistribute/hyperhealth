@@ -16,7 +16,7 @@ if (!key) {
 
 var drive = hyperdrive(memdb())
 var archive = drive.createArchive(key, {sparse: true, live: true})
-var swarm = hyperdiscovery(archive)
+hyperdiscovery(archive)
 
 var health = Health(archive)
 
@@ -28,12 +28,12 @@ var bars = {}
 setInterval(function () {
   getHealth()
   log.print()
-}, 100  )
+}, 100)
 getHealth()
 
 function getHealth () {
   var data = health.get()
-  if (!data || !data.peers.length) {
+  if (!data || !data.blocks || !data.peers.length) {
     output[1] = '\nNo peers.'
     bars = {}
     peerOutput.length = 0
@@ -45,8 +45,8 @@ function getHealth () {
 
   for (var i = 0; i < data.peers.length; i++) {
     var peer = data.peers[i]
-    var bar = bars[peer.id] ? bars[peer.id] : addPeerBar(peer.id, data.blocks)
-    var msg = 'Peer ' + (i+1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.blocks + ')'
+    var bar = bars[peer.id] || addPeerBar(peer.id, data.blocks)
+    var msg = 'Peer ' + (i + 1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.blocks + ')'
     peerOutput[i] = msg
     connectedPeerIds.push(peer.id)
   }
@@ -66,6 +66,6 @@ function addPeerBar (id, blocks) {
       return '[' + complete + incomplete + ']'
     }
   })
-  peerOutput.push()
+  peerOutput.push() // add a new line for this block
   return bars[id]
 }
