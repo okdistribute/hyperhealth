@@ -7,6 +7,7 @@ var hyperdrive = require('hyperdrive')
 var memdb = require('memdb')
 var hyperdiscovery = require('hyperdiscovery')
 var pick = require('lodash.pick')
+var localcast = require('localcast')
 
 var key = process.argv.slice(2)[0]
 if (!key) {
@@ -14,6 +15,7 @@ if (!key) {
   process.exit(1)
 }
 
+var cast = localcast('hyperhealth')
 var drive = hyperdrive(memdb())
 var archive = drive.createArchive(key, {sparse: true, live: true})
 var swarm = hyperdiscovery(archive)
@@ -30,6 +32,9 @@ setInterval(function () {
   log.print()
 }, 100  )
 getHealth()
+cast.on('localcast', function () {
+  cast.emit('key', key)
+})
 
 function getHealth () {
   var data = health.get()
@@ -37,8 +42,10 @@ function getHealth () {
     output[1] = '\nNo peers.'
     bars = {}
     peerOutput.length = 0
+    if (data && data.blocks) cast.emit('data', data)
     return
   }
+  cast.emit('data', data)
   output[1] = 'Size: ' + pretty(data.bytes) + '\n'
 
   var connectedPeerIds = []
