@@ -1,16 +1,14 @@
-module.exports = function (feed) {
-  // works with hyperdrive archives or hypercore feeds
-  feed.open(function () {
-    if (feed.content) {
-      feed.content.get(0, function (data) {
-        // hack to get data
-      })
-    }
+module.exports = function (feedOrArchive) {
+  var feed = null
+
+  feedOrArchive.open(function () {
+    if (feedOrArchive.content) feed = feedOrArchive.content
+    else feed = feedOrArchive
+    feed.get(0, noop) // hack to get metadata info
   })
 
   function get () {
-    if (feed.content) feed = feed.content
-    if (!feed.peers) return
+    if (!feed || !feed.peers) return
     var blocks = feed.blocks
     var peers = []
 
@@ -39,3 +37,5 @@ module.exports = function (feed) {
     get: get
   }
 }
+
+function noop () { }
