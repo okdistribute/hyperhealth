@@ -1,15 +1,10 @@
-module.exports = function (feedOrArchive) {
-  var feed = null
-
-  feedOrArchive.open(function () {
-    if (feedOrArchive.content) feed = feedOrArchive.content
-    else feed = feedOrArchive
-    feed.get(0, noop) // hack to get metadata info
-  })
+module.exports = function (feed) {
+  if (feed.content) feed = feed.content
 
   function get () {
     if (!feed || !feed.peers) return
-    var blocks = feed.blocks
+    feed.update()
+    var length = feed.length
     var peers = []
 
     for (var i = 0; i < feed.peers.length; i++) {
@@ -18,18 +13,18 @@ module.exports = function (feedOrArchive) {
 
       if (!peer.stream || !peer.stream.remoteId) continue
 
-      for (var j = 0; j < blocks; j++) {
-        if (peer.remoteBitfield.get(j)) have++
+      for (var j = 0; j < length; j++) {
+        if (peer.remoteBitfield && peer.remoteBitfield.get(j)) have++
       }
 
       if (!have) continue
-      peers.push({id: peer.stream.remoteId.toString('hex'), have: have, blocks: feed.blocks})
+      peers.push({id: i, have: have, length: feed.length})
     }
 
     return {
-      bytes: feed.bytes,
-      blocks: feed.blocks,
-      peers: peers,
+      byteLength: feed.byteLength,
+      length: feed.length,
+      peers: peers
     }
   }
 
