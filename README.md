@@ -20,8 +20,8 @@ setInterval(function () {
   var data = health.get()
   console.log(data.peers.length, 'total peers')
   console.log(data.bytes, 'total bytes')
-  console.log(data.blocks, 'total blocks')
-  console.log('Peer 1 Downloaded ' + (data.peers[0].have / data.peers[0].blocks) * 100 + '%')
+  console.log(data.byteLength, 'total length')
+  console.log('Peer 1 Downloaded ' + (data.peers[0].have / data.peers[0].length) * 100 + '%')
 }, 1000)
 ```
 
