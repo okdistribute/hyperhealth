@@ -4,10 +4,11 @@ var pretty = require('pretty-bytes')
 var logger = require('status-logger')
 var progress = require('progress-string')
 var hyperdrive = require('hyperdrive')
-var memdb = require('memdb')
+var ram = require('random-access-memory')
 var hyperdiscovery = require('hyperdiscovery')
 var pick = require('lodash.pick')
 var localcast = require('localcast')
+var encoding = require('dat-encoding')
 
 var key = process.argv.slice(2)[0]
 if (!key) {
@@ -16,9 +17,12 @@ if (!key) {
 }
 
 var cast = localcast('hyperhealth')
-var drive = hyperdrive(memdb())
-var archive = drive.createArchive(key, {sparse: true, live: true})
-var swarm = hyperdiscovery(archive)
+var archive = hyperdrive(ram, encoding.toBuf(key), {sparse: true})
+var swarm
+
+archive.ready(function () {
+  swarm = hyperdiscovery(archive)
+})
 
 var health = Health(archive)
 
@@ -30,7 +34,7 @@ var bars = {}
 setInterval(function () {
   getHealth()
   log.print()
-}, 100  )
+}, 100)
 getHealth()
 cast.on('localcast', function () {
   cast.emit('key', key)
@@ -42,18 +46,18 @@ function getHealth () {
     output[1] = '\nNo peers.'
     bars = {}
     peerOutput.length = 0
-    if (data && data.blocks) cast.emit('data', data)
+    if (data && data.length) cast.emit('data', data)
     return
   }
   cast.emit('data', data)
-  output[1] = 'Size: ' + pretty(data.bytes) + '\n'
+  output[1] = 'Size: ' + pretty(data.byteLength) + '\n'
 
   var connectedPeerIds = []
 
   for (var i = 0; i < data.peers.length; i++) {
     var peer = data.peers[i]
-    var bar = bars[peer.id] ? bars[peer.id] : addPeerBar(peer.id, data.blocks)
-    var msg = 'Peer ' + (i+1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.blocks + ')'
+    var bar = bars[peer.id] ? bars[peer.id] : addPeerBar(peer.id, data.length)
+    var msg = 'Peer ' + (i + 1) + ': ' + bar(peer.have) + ' (' + peer.have + '/' + peer.length + ')'
     peerOutput[i] = msg
     connectedPeerIds.push(peer.id)
   }
