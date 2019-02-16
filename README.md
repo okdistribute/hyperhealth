@@ -13,23 +13,23 @@ npm install hyperhealth
 ```js
 var Health = require('hyperhealth')
 
-var health = Health(hypercore_feed)
+var health = Health(hyperdrive)
 
 // Will fire every 1 second
 setInterval(function () {
   var data = health.get()
   console.log(data.peers.length, 'total peers')
-  console.log(data.bytes, 'total bytes')
-  console.log(data.byteLength, 'total length')
+  console.log(data.length, 'total length')
+  console.log(data.byteLength, 'total bytes')
   console.log('Peer 1 Downloaded ' + (data.peers[0].have / data.peers[0].length) * 100 + '%')
 }, 1000)
 ```
 
 ## API
 
-### `health = Health(key-or-archive, [opts])`
+### `health = Health(archive-key, [opts])`
 
-Takes a `hyperdrive` or `hypercore` instance. Returns an object `health`.
+Takes a `hyperdrive` instance. Returns an object `health`.
 
 ### `health.get()`
 
@@ -38,12 +38,12 @@ state.
 
 Returns:
 
-* ```bytes```: Number of total bytes
-* ```blocks```: Number of total blocks
-* ```peers```: An array of the peers containing `id`, `blocks`, and `have`
+* ```byteLength```: Number of total bytes
+* ```length```: Number of total blocks
+* ```peers```: An array of the peers containing `id`, `length`, and `have`
 
 ### Peer object
 
 * `id`: The unique id of the peer, derived from `stream.remoteId`
-* `have`: The number of blocks that have been downloaded
-* `blocks`: The total number of blocks
+* `have`: The number of blocks that have been downloaded by peer
+* `length`: The total number of blocks
