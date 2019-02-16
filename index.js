@@ -10,9 +10,18 @@ module.exports = function (archive) {
 
     for (var i = 0; i < archive.content.peers.length; i++) {
       var peer = archive.content.peers[i]
+      var have = 0
+
       if (!peer.stream) continue
-      peers.push({ id: i, have: peer.remoteLength, length: length })
+
+      for (var j = 0; j < length; j++) {
+        if (peer.remoteBitfield && peer.remoteBitfield.get(j)) have++
+      }
+
+      if (!have) continue
+      peers.push({ id: i, have: have, length: length })
     }
+
 
     return {
       byteLength: archive.content.byteLength,
