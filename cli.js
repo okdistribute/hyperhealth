@@ -5,9 +5,10 @@ var logger = require('status-logger')
 var progress = require('progress-string')
 var hyperdrive = require('hyperdrive')
 var ram = require('random-access-memory')
+var hyperdiscovery = require('hyperdiscovery')
 var pick = require('lodash.pick')
-var datLink = require('dat-link-resolve')
-var discovery = require('hyperdiscovery')
+var localcast = require('localcast')
+var encoding = require('dat-encoding')
 
 var key = process.argv.slice(2)[0]
 if (!key) {
@@ -15,37 +16,40 @@ if (!key) {
   process.exit(1)
 }
 
+var cast = localcast('hyperhealth')
+var archive = hyperdrive(ram, encoding.toBuf(key), {sparse: true})
+var swarm
+
+archive.ready(function () {
+  swarm = hyperdiscovery(archive)
+})
+
+var health = Health(archive)
+
 var output = ['Watching ' + key, 'Connecting...']
 var peerOutput = []
 var log = logger([output, peerOutput])
 var bars = {}
-var health = null
 
-datLink(key, function (err, key) {
-  if (err) throw err
-  var archive = hyperdrive(ram, key, { sparse: true })
-  health = Health(archive)
-
-  archive.on('ready', () => {
-    discovery(archive)
-    archive.metadata.get(0, () => {
-      setInterval(function () {
-        getHealth()
-        log.print()
-      }, 100)
-    })
-  })
+setInterval(function () {
+  getHealth()
+  log.print()
+}, 100)
+getHealth()
+cast.on('localcast', function () {
+  cast.emit('key', key)
 })
 
 function getHealth () {
-  // if (!health) return
   var data = health.get()
   if (!data || !data.peers.length) {
     output[1] = '\nNo peers.'
     bars = {}
     peerOutput.length = 0
+    if (data && data.length) cast.emit('data', data)
     return
   }
+  cast.emit('data', data)
   output[1] = 'Size: ' + pretty(data.byteLength) + '\n'
 
   var connectedPeerIds = []
@@ -65,10 +69,10 @@ function getHealth () {
   }
 }
 
-function addPeerBar (id, length) {
+function addPeerBar (id, blocks) {
   bars[id] = progress({
     width: 50,
-    total: length, // TODO: what if total size changes for existing bars
+    total: blocks, // TODO: what if total size changes for existing bars
     style: function (complete, incomplete) {
       return '[' + complete + incomplete + ']'
     }
