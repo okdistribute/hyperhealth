@@ -1,31 +1,29 @@
-module.exports = function (archive) {
-  if (!archive) return
-  function get () {
-    archive.metadata.update()
-    if (!archive.content) return
-    archive.content.update()
+module.exports = function (feed) {
+  if (feed.content) feed = feed.content
 
-    var length = archive.content.length
+  function get () {
+    if (!feed || !feed.peers) return
+    feed.update()
+    var length = feed.length
     var peers = []
 
-    for (var i = 0; i < archive.content.peers.length; i++) {
-      var peer = archive.content.peers[i]
+    for (var i = 0; i < feed.peers.length; i++) {
       var have = 0
+      var peer = feed.peers[i]
 
-      if (!peer.stream) continue
+      if (!peer.stream || !peer.stream.remoteId) continue
 
       for (var j = 0; j < length; j++) {
         if (peer.remoteBitfield && peer.remoteBitfield.get(j)) have++
       }
 
       if (!have) continue
-      peers.push({ id: i, have: have, length: length })
+      peers.push({id: i, have: have, length: feed.length})
     }
 
-
     return {
-      byteLength: archive.content.byteLength,
-      length: length,
+      byteLength: feed.byteLength,
+      length: feed.length,
       peers: peers
     }
   }
@@ -34,3 +32,5 @@ module.exports = function (archive) {
     get: get
   }
 }
+
+function noop () { }
