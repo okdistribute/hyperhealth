@@ -13,7 +13,7 @@ npm install hyperhealth
 ```js
 var Health = require('hyperhealth')
 
-var health = Health(hyperdrive)
+var health = Health(core)
 
 // Will fire every 1 second
 setInterval(function () {
@@ -27,9 +27,9 @@ setInterval(function () {
 
 ## API
 
-### `health = Health(archive-key, [opts])`
+### `health = Health(hypercore-or-hyperdrive, [opts])`
 
-Takes a `hyperdrive` instance. Returns an object `health`.
+Takes a `hyperdrive` or `hypercore` instance. Returns an object `health`.
 
 ### `health.get()`
 
