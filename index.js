@@ -1,4 +1,5 @@
 module.exports = function (core) {
+  if (!core) throw new Error('Core required. Got null')
   function get () {
     var feed
 

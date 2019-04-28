@@ -27,41 +27,41 @@ debug('key', key)
 
 datLink(key, function (err, key) {
   if (err) throw err
-  var metadata = hypercore(ram, key, { sparse: true })
+  var core = hypercore(ram, key, { sparse: true })
   debug('getting key', key)
-  metadata.on('ready', () => {
-    var swarm = discovery(metadata)
-    getHyperdriveKey(metadata, function (_key) {
-      debug('get', key)
-      swarm.destroy()
-      var core = key ? hyperdrive(ram, key, { metadata, sparse: true }) : metadata
-      core.on('ready', () => {
-        health = Health(core)
-        debug(core)
-        discovery(core)
-        setInterval(function () {
-          getHealth()
-          log.print()
-        }, 100)
-      })
+  core.on('ready', () => {
+    var swarm = discovery(core)
+    getHyperdriveKey(core, function (isHyperdrive) {
+      debug('got hyperdrive key', isHyperdrive)
+      if (!isHyperdrive) return loop(core)
+      var archive = hyperdrive(ram, key, { metadata: core, sparse: true })
+      swarm = discovery(archive)
+      archive.on('ready', () => loop(archive))
     })
   })
 })
 
+function loop (feed) {
+  health = Health(feed)
+  setInterval(function () {
+    getHealth()
+    log.print()
+  }, 100)
+}
+
 function getHyperdriveKey (core, cb) {
-  debug('get')
   if (core.length) return get()
-  debug('update')
+  debug('updating')
   core.update(get)
 
   function get () {
-    debug('getting')
+    debug('getting index message')
     core.get(0, {valueEncoding: messages.Index}, async (err, index) => {
-      debug('got', err, index)
       if (err) return cb()
       if (index && index.type === 'hyperdrive') {
-        debug(index.content)
-        return cb(index.content.toString('hex'))
+        var contentKey = index.content.toString('hex')
+        debug('contentKey', contentKey)
+        return cb(contentKey)
       }
       debug('calling back')
       return cb()
