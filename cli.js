@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 var Health = require('./')
+var debug =  require('debug')('hyperhealth')
 var pretty = require('pretty-bytes')
 var logger = require('status-logger')
 var progress = require('progress-string')
@@ -9,7 +10,7 @@ var ram = require('random-access-memory')
 var pick = require('lodash.pick')
 var datLink = require('dat-link-resolve')
 var discovery = require('hyperdiscovery')
-const messages = require('hyperdrive/lib/messages')
+var messages = require('hyperdrive/lib/messages')
 
 var key = process.argv.slice(2)[0]
 if (!key) {
@@ -22,17 +23,22 @@ var peerOutput = []
 var log = logger([output, peerOutput])
 var bars = {}
 var health = null
+debug('key', key)
 
 datLink(key, function (err, key) {
   if (err) throw err
   var metadata = hypercore(ram, key, { sparse: true })
-  getHyperdriveKey(metadata, function (key) {
-    var core = key ? hyperdrive(ram, key, { metadata }) : metadata
-    health = Health(core)
-
-    core.on('ready', () => {
-      discovery(core)
-      metadata.get(0, () => {
+  debug('getting key', key)
+  metadata.on('ready', () => {
+    var swarm = discovery(metadata)
+    getHyperdriveKey(metadata, function (_key) {
+      debug('get', key)
+      swarm.destroy()
+      var core = key ? hyperdrive(ram, key, { metadata, sparse: true }) : metadata
+      core.on('ready', () => {
+        health = Health(core)
+        debug(core)
+        discovery(core)
         setInterval(function () {
           getHealth()
           log.print()
@@ -43,15 +49,21 @@ datLink(key, function (err, key) {
 })
 
 function getHyperdriveKey (core, cb) {
+  debug('get')
   if (core.length) return get()
+  debug('update')
   core.update(get)
 
   function get () {
+    debug('getting')
     core.get(0, {valueEncoding: messages.Index}, async (err, index) => {
+      debug('got', err, index)
       if (err) return cb()
       if (index && index.type === 'hyperdrive') {
+        debug(index.content)
         return cb(index.content.toString('hex'))
       }
+      debug('calling back')
       return cb()
     })
   }
