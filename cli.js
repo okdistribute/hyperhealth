@@ -3,11 +3,13 @@ var Health = require('./')
 var pretty = require('pretty-bytes')
 var logger = require('status-logger')
 var progress = require('progress-string')
+var hypercore = require('hypercore')
 var hyperdrive = require('hyperdrive')
 var ram = require('random-access-memory')
 var pick = require('lodash.pick')
 var datLink = require('dat-link-resolve')
 var discovery = require('hyperdiscovery')
+const messages = require('hyperdrive/lib/messages')
 
 var key = process.argv.slice(2)[0]
 if (!key) {
@@ -23,19 +25,37 @@ var health = null
 
 datLink(key, function (err, key) {
   if (err) throw err
-  var archive = hyperdrive(ram, key, { sparse: true })
-  health = Health(archive)
+  var metadata = hypercore(ram, key, { sparse: true })
+  getHyperdriveKey(metadata, function (key) {
+    var core = key ? hyperdrive(ram, key, { metadata }) : metadata
+    health = Health(core)
 
-  archive.on('ready', () => {
-    discovery(archive)
-    archive.metadata.get(0, () => {
-      setInterval(function () {
-        getHealth()
-        log.print()
-      }, 100)
+    core.on('ready', () => {
+      discovery(core)
+      metadata.get(0, () => {
+        setInterval(function () {
+          getHealth()
+          log.print()
+        }, 100)
+      })
     })
   })
 })
+
+function getHyperdriveKey (core, cb) {
+  if (core.length) return get()
+  core.update(get)
+
+  function get () {
+    core.get(0, {valueEncoding: messages.Index}, async (err, index) => {
+      if (err) return cb()
+      if (index && index.type === 'hyperdrive') {
+        return cb(index.content.toString('hex'))
+      }
+      return cb()
+    })
+  }
+}
 
 function getHealth () {
   // if (!health) return

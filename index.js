@@ -1,15 +1,21 @@
-module.exports = function (archive) {
-  if (!archive) return
+module.exports = function (core) {
   function get () {
-    archive.metadata.update()
-    if (!archive.content) return
-    archive.content.update()
+    var feed
 
-    var length = archive.content.length
+    if (core.content) {
+      feed = core.content
+      core.metadata.update()
+      core.content.update()
+    } else {
+      feed = core
+      core.update()
+    }
+
+    var length = feed.length
     var peers = []
 
-    for (var i = 0; i < archive.content.peers.length; i++) {
-      var peer = archive.content.peers[i]
+    for (var i = 0; i < feed.peers.length; i++) {
+      var peer = feed.peers[i]
       var have = 0
 
       if (!peer.stream) continue
@@ -22,9 +28,8 @@ module.exports = function (archive) {
       peers.push({ id: i, have: have, length: length })
     }
 
-
     return {
-      byteLength: archive.content.byteLength,
+      byteLength: feed.byteLength,
       length: length,
       peers: peers
     }
