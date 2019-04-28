@@ -25,7 +25,6 @@ module.exports = function (core) {
         if (peer.remoteBitfield && peer.remoteBitfield.get(j)) have++
       }
 
-      if (!have) continue
       peers.push({ id: i, have: have, length: length })
     }
 
