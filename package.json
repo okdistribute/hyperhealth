@@ -20,14 +20,17 @@
   "author": "Karissa McKelvey <karissa@datproject.org>",
   "license": "BSD-2-Clause",
   "dependencies": {
-    "dat-encoding": "^4.0.2",
-    "hyperdiscovery": "^6.0.0",
+    "dat-encoding": "^5.0.1",
+    "dat-link-resolve": "^2.3.0",
+    "dat-swarm-defaults": "^1.0.2",
+    "debug": "^4.1.1",
+    "discovery-swarm": "^5.1.4",
+    "hyperdiscovery": "^8.0.0",
     "hyperdrive": "^9.0.0",
-    "localcast": "^2.0.1",
     "lodash.pick": "^4.4.0",
-    "pretty-bytes": "^4.0.2",
+    "pretty-bytes": "^5.1.0",
     "progress-string": "^1.2.1",
-    "random-access-memory": "^2.4.0",
+    "random-access-memory": "^3.1.1",
     "status-logger": "^3.0.0"
   },
   "keywords": [

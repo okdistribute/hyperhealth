@@ -1,29 +1,36 @@
-module.exports = function (feed) {
-  if (feed.content) feed = feed.content
-
+module.exports = function (core) {
+  if (!core) throw new Error('Core required. Got null')
   function get () {
-    if (!feed || !feed.peers) return
-    feed.update()
+    var feed
+
+    if (core.content) {
+      feed = core.content
+      core.metadata.update()
+      core.content.update()
+    } else {
+      feed = core
+      core.update()
+    }
+
     var length = feed.length
     var peers = []
 
     for (var i = 0; i < feed.peers.length; i++) {
-      var have = 0
       var peer = feed.peers[i]
+      var have = 0
 
-      if (!peer.stream || !peer.stream.remoteId) continue
+      if (!peer.stream) continue
 
       for (var j = 0; j < length; j++) {
         if (peer.remoteBitfield && peer.remoteBitfield.get(j)) have++
       }
 
-      if (!have) continue
-      peers.push({id: i, have: have, length: feed.length})
+      peers.push({ id: i, have: have, length: length })
     }
 
     return {
       byteLength: feed.byteLength,
-      length: feed.length,
+      length: length,
       peers: peers
     }
   }
@@ -32,5 +39,3 @@ module.exports = function (feed) {
     get: get
   }
 }
-
-function noop () { }
